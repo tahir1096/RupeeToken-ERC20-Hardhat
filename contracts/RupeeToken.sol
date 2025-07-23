@@ -9,7 +9,6 @@ contract RupeeToken is ERC20Capped, ERC20Burnable {
     address payable public owner;
     uint public blockReward;
 
-    // Event declaration
     event BlockRewardUpdated(uint256 oldReward, uint256 newReward);
 
     constructor(uint256 cap, uint256 reward)
@@ -21,25 +20,14 @@ contract RupeeToken is ERC20Capped, ERC20Burnable {
         blockReward = reward * (10 ** decimals());
     }
 
-    /**
-     * @dev This internal function is now used to resolve the inheritance conflict
-     * between ERC20 and ERC20Capped, both of which define an _update function.
-     * We also place our custom logic here.
-     */
     function _update(address from, address to, uint256 value)
         internal
-        override(ERC20, ERC20Capped) // Explicitly override both parent functions
+        override(ERC20, ERC20Capped)
     {
-        // This is your custom logic to mint a reward on every token transfer.
-        // It does not run on the initial mint (from == address(0)) or on burns (to == address(0)).
         if (from != address(0) && to != address(0)) {
-            // Note: This mints new tokens to the owner on EVERY transfer.
-            // This will increase the total supply over time.
             _mint(owner, blockReward);
         }
 
-        // This executes the original logic from the parent contracts,
-        // including the supply cap check and the actual token transfer.
         super._update(from, to, value);
     }
 
